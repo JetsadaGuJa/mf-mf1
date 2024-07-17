@@ -1,10 +1,19 @@
 {
+  "version": 2,
+  "name": "mf-mf1",
   "builds": [
     {
       "src": "src/index.js",
       "use": "@vercel/node",
-      "config": { "distDir": "dist" }
+      "config": {
+        "distDir": "dist"
+      }
     }
   ],
-  "routes": [{ "src": "/(.*)", "dest": "/index.html" }]
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
 }

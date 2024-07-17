@@ -2,9 +2,11 @@ const HtmlWebPackPlugin = require("html-webpack-plugin");
 const ModuleFederationPlugin = require("webpack/lib/container/ModuleFederationPlugin");
 const Dotenv = require("dotenv-webpack");
 const deps = require("./package.json").dependencies;
+const path = require("path");
 module.exports = (_, argv) => ({
   output: {
-    publicPath: "https://mf-mf1-659nipcur-jetsada-gujans-projects.vercel.app/",
+    publicPath: "https://mf-mf1-9ukuqi9n2-jetsada-gujans-projects.vercel.app/",
+    path: path.resolve(__dirname, "dist"),
   },
 
   resolve: {
