@@ -1,96 +1,101 @@
 const HtmlWebPackPlugin = require("html-webpack-plugin");
 const ModuleFederationPlugin = require("webpack/lib/container/ModuleFederationPlugin");
 const Dotenv = require("dotenv-webpack");
-const deps = require("./package.json").dependencies;
 const path = require("path");
-module.exports = (_, argv) => ({
-  output: {
-    publicPath: "https://mf-mf1-9ukuqi9n2-jetsada-gujans-projects.vercel.app/",
-    path: path.resolve(__dirname, "dist"),
-  },
+const deps = require("./package.json").dependencies;
 
-  resolve: {
-    extensions: [".tsx", ".ts", ".jsx", ".js", ".json"],
-  },
+module.exports = (_, argv) => {
+  const publicPath = process.env.PUBLIC_PATH || "http://localhost:3002/";
 
-  devServer: {
-    port: 3002,
-    historyApiFallback: true,
-  },
+  return {
+    output: {
+      publicPath: publicPath,
+      path: path.resolve(__dirname, "dist"),
+    },
 
-  module: {
-    rules: [
-      {
-        test: /\.m?js/,
-        type: "javascript/auto",
-        resolve: {
-          fullySpecified: false,
-        },
-      },
-      {
-        test: /\.(css|s[ac]ss)$/i,
-        use: ["style-loader", "css-loader", "postcss-loader"],
-      },
-      {
-        test: /\.(ts|tsx|js|jsx)$/,
-        exclude: /node_modules/,
-        use: {
-          loader: "ts-loader",
-          loader: "babel-loader",
-        },
-      },
-      {
-        test: /\.json$/,
-        use: "json-loader",
-        type: "javascript/auto", // This line is required in Webpack 4 and later versions.
-      },
-      {
-        test: /\.(jpg|png|gif)$/i,
-        use: [
-          {
-            loader: "file-loader",
+    resolve: {
+      extensions: [".tsx", ".ts", ".jsx", ".js", ".json"],
+    },
+
+    devServer: {
+      port: 3002,
+      historyApiFallback: true,
+    },
+
+    module: {
+      rules: [
+        {
+          test: /\.m?js/,
+          type: "javascript/auto",
+          resolve: {
+            fullySpecified: false,
           },
-        ],
-      },
-      {
-        test: /\.(woff|woff2|eot|ttf|otf)$/i,
-        use: [
-          {
-            loader: "file-loader",
+        },
+        {
+          test: /\.(css|s[ac]ss)$/i,
+          use: ["style-loader", "css-loader", "postcss-loader"],
+        },
+        {
+          test: /\.(ts|tsx|js|jsx)$/,
+          exclude: /node_modules/,
+          use: {
+            loader: "ts-loader",
+            loader: "babel-loader",
           },
-        ],
-      },
+        },
+        {
+          test: /\.json$/,
+          use: "json-loader",
+          type: "javascript/auto",
+        },
+        {
+          test: /\.(jpg|png|gif)$/i,
+          use: [
+            {
+              loader: "file-loader",
+            },
+          ],
+        },
+        {
+          test: /\.(woff|woff2|eot|ttf|otf)$/i,
+          use: [
+            {
+              loader: "file-loader",
+            },
+          ],
+        },
+      ],
+    },
+
+    plugins: [
+      new ModuleFederationPlugin({
+        name: "mf1",
+        filename: "remoteEntry.js",
+        remotes: {},
+        exposes: {
+          "./Home": "./src/Home",
+          "./Pokemon": "./src/Pokemon",
+        },
+        shared: {
+          ...deps,
+          react: {
+            singleton: true,
+            requiredVersion: deps.react,
+          },
+          "react-dom": {
+            singleton: true,
+            requiredVersion: deps["react-dom"],
+          },
+          "react-router-dom": {
+            singleton: true,
+            requiredVersion: deps["react-router-dom"],
+          },
+        },
+      }),
+      new HtmlWebPackPlugin({
+        template: "./src/index.html",
+      }),
+      new Dotenv(),
     ],
-  },
-
-  plugins: [
-    new ModuleFederationPlugin({
-      name: "mf1",
-      filename: "remoteEntry.js",
-      remotes: {},
-      exposes: {
-        "./Home": "./src/Home",
-        "./Pokemon": "./src/Pokemon",
-      },
-      shared: {
-        ...deps,
-        react: {
-          singleton: true,
-          requiredVersion: deps.react,
-        },
-        "react-dom": {
-          singleton: true,
-          requiredVersion: deps["react-dom"],
-        },
-        "react-router-dom": {
-          singleton: true,
-          requiredVersion: deps["react-router-dom"],
-        },
-      },
-    }),
-    new HtmlWebPackPlugin({
-      template: "./src/index.html",
-    }),
-    new Dotenv(),
-  ],
-});
+  };
+};
