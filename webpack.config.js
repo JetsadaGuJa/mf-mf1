@@ -9,8 +9,9 @@ module.exports = (_, argv) => {
 
   return {
     output: {
-      publicPath: publicPath,
+      // publicPath: publicPath,
       path: path.resolve(__dirname, "dist"),
+      filename: "bundle.js",
     },
 
     resolve: {
@@ -20,6 +21,8 @@ module.exports = (_, argv) => {
     devServer: {
       port: 3002,
       historyApiFallback: true,
+      contentBase: path.join(__dirname, "dist"),
+      compress: true,
     },
 
     module: {
