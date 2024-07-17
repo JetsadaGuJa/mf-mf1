@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "react-scripts start",
-    "build": "webpack --mode production",
+    "build": "webpack --config webpack.config.js --mode production",
     "build:dev": "webpack --mode development",
     "build:start": "cd dist && PORT=3002 npx serve",
     "start": "webpack serve --open --mode development",
